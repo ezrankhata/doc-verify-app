@@ -1,0 +1,8 @@
+.env
+node_modules/
+artifacts/
+cache/
+dist/
+ignition/deployments/
+frontend/node_modules/
+frontend/dist/
