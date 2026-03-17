@@ -116,7 +116,7 @@ export const normaliseBlockchainError = (err) => {
 
   if (err?.code === "NETWORK_ERROR" || err?.code === "UNKNOWN_ERROR") {
     return new WalletError(
-      "Network error. Check that your local blockchain node is running.",
+      "Network error. Make sure MetaMask is connected and switched to Sepolia Testnet.",
       "NETWORK_ERROR"
     );
   }
