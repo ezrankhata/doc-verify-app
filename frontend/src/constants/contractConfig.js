@@ -1,6 +1,6 @@
 // Contract address — set after deployment (Student 3 provides this)
 // For local Hardhat node: run `npm run deploy:local` from the project root
-export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || "";
+export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || "0xc73fdD462dA0Eb3B5d5A0648F7d0Cc171A337878";
 
 export const SUPPORTED_CHAIN_IDS = {
   SEPOLIA_TESTNET: 11155111,
