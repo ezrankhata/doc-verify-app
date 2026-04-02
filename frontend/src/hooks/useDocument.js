@@ -21,6 +21,7 @@ import {
   getDocumentsByOwner,
   TX_STATE,
 } from "../services/blockchainService";
+import { scanFileForQR } from "../utils/qrScanner";
 
 /**
  * @typedef {Object} UseDocumentReturn
@@ -55,10 +56,11 @@ import {
  * @returns {UseDocumentReturn}
  */
 const useDocument = (signer) => {
-  // File & Hash state 
+  // File & Hash state
   const [selectedFile, setSelectedFile] = useState(null);
   const [hash,         setHash]         = useState(null);
   const [isHashing,    setIsHashing]    = useState(false);
+  const [hashSource,   setHashSource]   = useState(null); // "file" | "qr"
 
   //Registration state 
   const [txState,   setTxState]   = useState(TX_STATE.IDLE);
@@ -99,10 +101,41 @@ const useDocument = (signer) => {
     }
   }, []);
 
+  /**
+   * selectFileForVerify — like selectFile but first scans the file for an
+   * embedded DocVerify QR code. If found, uses the QR hash (so stamped PDFs
+   * verify correctly). Falls back to full file hashing if no QR is detected.
+   */
+  const selectFileForVerify = useCallback(async (file) => {
+    if (!file) return;
+    setSelectedFile(file);
+    setHash(null);
+    setHashSource(null);
+    setError(null);
+    setVerifyResult(null);
+    setIsHashing(true);
+    try {
+      const qrHash = await scanFileForQR(file);
+      if (qrHash) {
+        setHash(qrHash);
+        setHashSource("qr");
+      } else {
+        const computedHash = await hashFile(file);
+        setHash(computedHash);
+        setHashSource("file");
+      }
+    } catch (err) {
+      setError(`Hashing failed: ${err.message}`);
+    } finally {
+      setIsHashing(false);
+    }
+  }, []);
+
   /** Reset all document state */
   const clearFile = useCallback(() => {
     setSelectedFile(null);
     setHash(null);
+    setHashSource(null);
     setIsHashing(false);
     setTxState(TX_STATE.IDLE);
     setTxReceipt(null);
@@ -198,8 +231,10 @@ const useDocument = (signer) => {
     // File & hash
     selectedFile,
     hash,
+    hashSource,
     isHashing,
     selectFile,
+    selectFileForVerify,
     clearFile,
 
     // Registration (

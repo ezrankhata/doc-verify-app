@@ -7,7 +7,7 @@ import { getNameByWallet } from "../utils/userStore";
 export default function VerifyPage() {
   const {
     isConnected, connect, isConnecting, hasMetaMask,
-    selectedFile, hash, isHashing, selectFile, clearFile,
+    selectedFile, hash, hashSource, isHashing, selectFileForVerify, clearFile,
     verify, isVerifying, verifyResult,
     docError, clearDocError,
   } = useBlockchain();
@@ -22,7 +22,7 @@ export default function VerifyPage() {
   const [scannedHash, setScannedHash] = useState(null);
   const scannerRef = useRef(null);
 
-  const handleFile = (file) => { if (!file) return; clearDocError?.(); selectFile(file); };
+  const handleFile = (file) => { if (!file) return; clearDocError?.(); selectFileForVerify(file); };
   const handleDrop = (e) => { e.preventDefault(); setDrag(false); handleFile(e.dataTransfer.files[0]); };
 
   useEffect(() => {
@@ -132,10 +132,20 @@ export default function VerifyPage() {
             )}
           </div>
 
-          {isHashing && <div className="alert alert-info"><span className="spinner" /> Computing hash…</div>}
+          {isHashing && (
+            <div className="alert alert-info">
+              <span className="spinner" /> {hashSource === null ? "Scanning for QR code…" : "Computing hash…"}
+            </div>
+          )}
 
           {hash && !isHashing && (
             <>
+              {hashSource === "qr" && (
+                <div className="alert alert-info" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <QrCode size={15} />
+                  <span>QR code detected — verifying by embedded QR hash</span>
+                </div>
+              )}
               <div className="hash-box">{hash}</div>
               <button className="btn btn-primary" onClick={verify} disabled={isVerifying}>
                 {isVerifying ? <><span className="spinner" /> Checking blockchain…</> : <><FileSearch size={15} /> Verify Document</>}

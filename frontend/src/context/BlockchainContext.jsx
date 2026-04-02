@@ -67,11 +67,13 @@ export const BlockchainProvider = ({ children }) => {
     walletError:  wallet.error,
 
     // ── Document (from useDocument) 
-    selectedFile:  document.selectedFile,
-    hash:          document.hash,
-    isHashing:     document.isHashing,
-    selectFile:    document.selectFile,
-    clearFile:     document.clearFile,
+    selectedFile:        document.selectedFile,
+    hash:                document.hash,
+    hashSource:          document.hashSource,
+    isHashing:           document.isHashing,
+    selectFile:          document.selectFile,
+    selectFileForVerify: document.selectFileForVerify,
+    clearFile:           document.clearFile,
 
     txState:       document.txState,
     txReceipt:     document.txReceipt,
